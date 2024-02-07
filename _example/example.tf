@@ -8,37 +8,37 @@ locals {
   label_order = ["name", "environment"]
 }
 
-##----------------------------------------------------------------------------- 
+##-----------------------------------------------------------------------------
 ## Resource Group module call
 ## Resource group in which all resources will be deployed.
 ##-----------------------------------------------------------------------------
 module "resource_group" {
-  source      = "git::git@github.com:opsstation/terraform-azure-resource-group.git"
+  source      = "git::https://github.com/opsstation/terraform-azure-resource-group.git?ref=v1.0.0"
   name        = local.name
   environment = local.environment
   label_order = local.label_order
   location    = "Canada Central"
 }
 
-##----------------------------------------------------------------------------- 
+##-----------------------------------------------------------------------------
 ## Virtual Network module call.
 ##-----------------------------------------------------------------------------
 module "vnet" {
   depends_on          = [module.resource_group]
-  source              = "git::git@github.com:opsstation/terraform-azure-vnet.git"
+  source              = "git::https://github.com/opsstation/terraform-azure-vnet.git?ref=v1.0.0"
   name                = local.name
   environment         = local.environment
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
-  address_spaces       = ["10.30.0.0/22"]
+  address_spaces      = ["10.30.0.0/22"]
 }
 
-##----------------------------------------------------------------------------- 
-## Subnet Module call. 
-## Subnet to which network security group will be attached. 
+##-----------------------------------------------------------------------------
+## Subnet Module call.
+## Subnet to which network security group will be attached.
 ##-----------------------------------------------------------------------------
 module "subnet" {
-  source = "git::git@github.com:opsstation/terraform-azure-subnet.git"
+  source               = "git::https://github.com/opsstation/terraform-azure-subnet.git?ref=v1.0.0"
   name                 = local.name
   environment          = local.environment
   resource_group_name  = module.resource_group.resource_group_name
@@ -60,12 +60,12 @@ module "subnet" {
   ]
 }
 
-##----------------------------------------------------------------------------- 
-## Log Analytics module call. 
-## Log Analytics workspace in which network security group diagnostic setting logs will be received. 
+##-----------------------------------------------------------------------------
+## Log Analytics module call.
+## Log Analytics workspace in which network security group diagnostic setting logs will be received.
 ##-----------------------------------------------------------------------------
 module "log-analytics" {
-  source                           = "git::git@github.com:opsstation/terraform-azure-log-analytics.git"
+  source                           = "git::https://github.com/opsstation/terraform-azure-log-analytics.git?ref=v1.0.0"
   name                             = local.name
   environment                      = local.environment
   label_order                      = local.label_order
@@ -77,8 +77,8 @@ module "log-analytics" {
   log_analytics_workspace_id = module.log-analytics.workspace_id
 }
 
-##----------------------------------------------------------------------------- 
-## Network Security Group module call. 
+##-----------------------------------------------------------------------------
+## Network Security Group module call.
 ##-----------------------------------------------------------------------------
 module "network_security_group" {
   depends_on              = [module.subnet]
